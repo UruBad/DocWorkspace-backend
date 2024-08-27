@@ -1,20 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { Role } from '../../../common';
 
-export class CreateUserDto {
+export class CreateVitaminDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  readonly username: string;
+  readonly name: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  readonly password: string;
+  readonly description: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly image: string;
+
+  @ApiProperty()
+  @IsString()
+  readonly link: string;
 }
 
-export class DefaultColumnsResponse extends CreateUserDto {
+export class DefaultColumnsResponse extends CreateVitaminDto {
   @ApiProperty()
   readonly id: number;
 
@@ -23,7 +29,4 @@ export class DefaultColumnsResponse extends CreateUserDto {
 
   @ApiProperty()
   readonly updatedAt: Date;
-
-  @ApiProperty()
-  readonly role: Role;
 }

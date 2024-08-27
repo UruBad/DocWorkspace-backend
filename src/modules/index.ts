@@ -1,2 +1,3 @@
-export * from './users/users.module';
-export * from './auth/auth.module';
+export { UsersModule } from './users';
+export * from './auth';
+export { VitaminsModule } from './vitamins';

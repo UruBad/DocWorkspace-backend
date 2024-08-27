@@ -3,7 +3,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { config, enviroments } from './configs';
-import { AuthModule, UsersModule } from './modules';
+import * as modules from './modules';
 
 @Module({
   imports: [
@@ -25,19 +25,27 @@ import { AuthModule, UsersModule } from './modules';
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
         return {
-          type: 'postgres',
-          host: configService.postgres.host,
-          port: configService.postgres.port,
-          database: configService.postgres.name,
-          username: configService.postgres.user,
-          password: configService.postgres.password,
+          type: 'mysql',
+          host: configService.database.host,
+          port: configService.database.port,
+          database: configService.database.name,
+          username: configService.database.user,
+          password: configService.database.password,
           autoLoadEntities: true,
           keepConnectionAlive: true,
+          synchronize: false,
+          migrations: [__dirname + '/database/migrations/**/*{.ts,.js}'],
+          seeds: [__dirname + '/database/seeds/**/*{.ts,.js}'],
+          factories: [__dirname + '/database/factories/**/*{.ts,.js}'],
+          cli: {
+            migrationsDir: __dirname + '/database/migrations/',
+          },
         };
       },
     }),
-    UsersModule,
-    AuthModule,
+    modules.AuthModule,
+    modules.UsersModule,
+    modules.VitaminsModule,
   ],
   controllers: [],
   providers: [],

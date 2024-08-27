@@ -15,12 +15,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  CreateUserDto,
-  DefaultColumnsResponse,
-  UpdateUserDto,
-} from '../dto/create-user.dto';
-import { UsersService } from '../services/users.service';
+import { CreateUserDto, DefaultColumnsResponse, UpdateUserDto } from '../dto';
+import { UsersService } from '../services';
 import { JwtAuthGuard, Public, Role, Roles, RolesGuard } from '../../../common';
 
 @ApiTags('users') // put the name of the controller in swagger
