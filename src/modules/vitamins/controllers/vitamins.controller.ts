@@ -17,7 +17,7 @@ import {
 
 import {
   CreateVitaminDto,
-  DefaultColumnsResponse,
+  VitaminColumnsResponse,
   UpdateVitaminDto,
 } from '../dto';
 import { VitaminsService } from '../services';
@@ -32,7 +32,7 @@ export class VitaminsController {
   @ApiOperation({ summary: 'Создание витамина' })
   @ApiResponse({
     status: 201,
-    type: DefaultColumnsResponse,
+    type: VitaminColumnsResponse,
   })
   @Roles(Role.DOCTOR)
   @Post()
@@ -44,7 +44,7 @@ export class VitaminsController {
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: DefaultColumnsResponse,
+    type: VitaminColumnsResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)
@@ -57,7 +57,7 @@ export class VitaminsController {
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: DefaultColumnsResponse,
+    type: VitaminColumnsResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)
@@ -70,7 +70,7 @@ export class VitaminsController {
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: DefaultColumnsResponse,
+    type: VitaminColumnsResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)

@@ -15,31 +15,32 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { CreateUserDto, DefaultColumnsResponse, UpdateUserDto } from '../dto';
+import { CreateUserDto, UserColumnsResponse, UpdateUserDto } from '../dto';
 import { UsersService } from '../services';
 import { JwtAuthGuard, Public, Role, Roles, RolesGuard } from '../../../common';
 
-@ApiTags('users') // put the name of the controller in swagger
+@ApiTags('users')
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard) //  makes the all routs as private by default
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'create a user with customer role' })
+  @ApiOperation({ summary: 'Создание пользователя' })
   @ApiResponse({
     status: 201,
-    type: DefaultColumnsResponse,
+    type: UserColumnsResponse,
   })
-  @Public() // makes the endpoint accessible to all
+  @Public()
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() dto: CreateUserDto) {
+    return this.usersService.create(dto);
   }
 
+  @ApiOperation({ summary: 'Получение всех пользователей' })
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: DefaultColumnsResponse,
+    type: UserColumnsResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(Role.ADMIN)
@@ -48,13 +49,15 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @ApiOperation({ summary: 'Изменение пользователя' })
   @ApiBearerAuth('access-token')
   @Roles(Role.ADMIN)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(+id, dto);
   }
 
+  @ApiOperation({ summary: 'Удаление пользователя' })
   @ApiBearerAuth('access-token')
   @Roles(Role.ADMIN)
   @Delete(':id')

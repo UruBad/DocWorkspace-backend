@@ -1,3 +1,4 @@
 export { UsersModule } from './users';
-export * from './auth';
+export { AuthModule } from './auth';
 export { VitaminsModule } from './vitamins';
+export { PrescriptionsModule } from './prescriptions';

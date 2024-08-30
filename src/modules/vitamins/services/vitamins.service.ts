@@ -11,12 +11,10 @@ export class VitaminsService {
     private vitaminRepository: Repository<Vitamin>,
   ) {}
 
-  async create(createVitaminDto: CreateVitaminDto) {
-    const createdVitamin = await this.vitaminRepository.create(
-      createVitaminDto,
-    );
-    const saveVitamin = await this.vitaminRepository.save(createdVitamin);
-    return saveVitamin;
+  async create(dto: CreateVitaminDto) {
+    const created = this.vitaminRepository.create(dto);
+    const saved = await this.vitaminRepository.save(created);
+    return saved;
   }
 
   async find() {
@@ -31,24 +29,24 @@ export class VitaminsService {
     return await this.vitaminRepository.findOneByOrFail({ id, deleted: false });
   }
 
-  async update(id: number, updateVitaminDto: UpdateVitaminDto) {
-    const vitamin = await this.vitaminRepository.preload({
+  async update(id: number, dto: UpdateVitaminDto) {
+    const item = await this.vitaminRepository.preload({
       id,
-      ...updateVitaminDto,
+      ...dto,
     });
-    if (!vitamin) {
+    if (!item) {
       throw new NotFoundException(`Vitamin with id ${id} does not exist`);
     }
-    return this.vitaminRepository.save(vitamin);
+    return this.vitaminRepository.save(item);
   }
 
   async remove(id: number) {
-    const vitamin = await this.vitaminRepository.findOneByOrFail({ id });
+    const item = await this.vitaminRepository.findOneByOrFail({ id });
 
-    if (!vitamin) {
+    if (!item) {
       throw new NotFoundException(`Vitamin with id ${id} does not exist`);
     }
 
-    return this.vitaminRepository.remove(vitamin);
+    return this.vitaminRepository.remove(item);
   }
 }

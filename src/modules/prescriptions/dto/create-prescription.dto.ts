@@ -1,21 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { Role } from '../../../common';
 
-export class CreateVitaminDto {
+export class CreatePrescriptionDto {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  readonly name: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly description: string;
+  readonly breakfast: string;
 
   @ApiProperty()
   @IsString()
-  readonly image: string;
+  readonly brunch: string;
 
   @ApiProperty()
   @IsString()
-  readonly link: string;
+  readonly lunch: string;
 }

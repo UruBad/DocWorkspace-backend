@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
@@ -44,6 +44,7 @@ import * as modules from './modules';
       },
     }),
     modules.AuthModule,
+    modules.PrescriptionsModule,
     modules.UsersModule,
     modules.VitaminsModule,
   ],

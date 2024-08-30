@@ -17,35 +17,34 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(dto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
-      username: createUserDto.username,
+      username: dto.username,
     });
 
     if (user) {
       throw new BadRequestException();
     }
 
-    const createdUser = await this.userRepository.create(createUserDto);
-    const saveUser = await this.userRepository.save(createdUser);
-    delete saveUser.password;
-    delete saveUser.refreshToken;
-    return saveUser;
+    const created = this.userRepository.create({
+      ...dto,
+    });
+    const saved = await this.userRepository.save(created);
+    delete saved.password;
+    delete saved.refreshToken;
+    return saved;
   }
 
   async findAll() {
     return this.userRepository.find();
   }
 
-  async findByUsernameAndGetPassword(username: string) {
-    return await this.userRepository.findOne({
-      select: ['id', 'password', 'role'],
-      where: { username },
-    });
-  }
-
   async findById(id: number) {
     return await this.userRepository.findOneByOrFail({ id });
+  }
+
+  async findByDoctor(id: number) {
+    return await this.userRepository.findBy({ id });
   }
 
   async findByUsername(username: string) {
@@ -54,29 +53,28 @@ export class UsersService {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.preload({
+  async update(id: number, dto: UpdateUserDto) {
+    const item = await this.userRepository.preload({
       id,
-      ...updateUserDto,
+      ...dto,
     });
-    if (!user) {
+    if (!item) {
       throw new NotFoundException(`User with id ${id} does not exist`);
     }
-    return this.userRepository.save(user);
+    return this.userRepository.save(item);
   }
 
   async remove(id: number) {
-    const user = await this.userRepository.findOneByOrFail({ id });
+    const item = await this.userRepository.findOneByOrFail({ id });
 
-    if (!user) {
+    if (!item) {
       throw new NotFoundException(`User with id ${id} does not exist`);
     }
 
-    return this.userRepository.remove(user);
+    return this.userRepository.remove(item);
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: number) {
-    //crypto is a node module, and bcrypt the maximum length of the hash is 60 characters, and token is longer than that, so we need to hash it
     const hash = createHash('sha256').update(refreshToken).digest('hex');
 
     const currentHashedRefreshToken = await bcrypt.hashSync(hash, 10);
@@ -85,21 +83,21 @@ export class UsersService {
     });
   }
 
-  async removeRefreshToken(userId: number) {
-    await this.findById(userId);
+  async removeRefreshToken(id: number) {
+    await this.findById(id);
 
     return this.userRepository.update(
-      { id: userId },
+      { id: id },
       {
         refreshToken: null,
       },
     );
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
     const user = await this.userRepository.findOne({
       select: ['id', 'refreshToken', 'role'],
-      where: { id: userId },
+      where: { id },
     });
 
     const hash = createHash('sha256').update(refreshToken).digest('hex');
