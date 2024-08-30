@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
-import { BeforeInsert, Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import { DefaultEntity, Role } from '../../../common';
-import { Vitamin } from '../../vitamins';
+import { Vitamin } from '../../vitamins/entities';
 import { DoctorPatient } from './doctor-patient.entity';
 
 @Entity('users')
@@ -25,8 +25,8 @@ export class User extends DefaultEntity {
   })
   role: Role;
 
-  /* @OneToMany(() => Vitamin, (vitamin) => vitamin.user)
-  vitamins: Vitamin[]; */
+  @OneToMany(() => Vitamin, (vitamin) => vitamin.doctor)
+  vitamins: Vitamin[];
 
   @OneToMany(() => DoctorPatient, (doctorPatient) => doctorPatient.doctor)
   doctors: User[];

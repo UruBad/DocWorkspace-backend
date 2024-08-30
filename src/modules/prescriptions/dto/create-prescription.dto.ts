@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
-import { Role } from '../../../common';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreatePrescriptionDto {
   @ApiProperty()
@@ -14,4 +13,12 @@ export class CreatePrescriptionDto {
   @ApiProperty()
   @IsString()
   readonly lunch: string;
+
+  @ApiProperty()
+  @IsNumber()
+  readonly patientId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  readonly vitaminId: number;
 }

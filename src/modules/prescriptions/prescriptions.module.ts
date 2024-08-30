@@ -4,9 +4,15 @@ import { JwtStrategy } from '../auth';
 import { PrescriptionsController } from './controllers';
 import { Prescription } from './entities';
 import { PrescriptionsService } from './services';
+import { VitaminsModule } from '../vitamins';
+import { UsersModule } from '../users';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Prescription])],
+  imports: [
+    VitaminsModule,
+    UsersModule,
+    TypeOrmModule.forFeature([Prescription]),
+  ],
   controllers: [PrescriptionsController],
   providers: [PrescriptionsService, JwtStrategy],
   exports: [PrescriptionsService],

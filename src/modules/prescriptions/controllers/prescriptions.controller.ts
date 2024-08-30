@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -36,8 +37,8 @@ export class PrescriptionsController {
   })
   @Roles(Role.DOCTOR)
   @Post()
-  create(@Body() dto: CreatePrescriptionDto) {
-    return this.prescriptionsService.create(dto);
+  async create(@Body() dto: CreatePrescriptionDto, @Request() { user }: any) {
+    return this.prescriptionsService.create(user.Id, dto);
   }
 
   @ApiOperation({ summary: 'Список назначений' })
@@ -49,8 +50,21 @@ export class PrescriptionsController {
   @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)
   @Get()
-  find(@Param('userId') userId: string) {
-    return this.prescriptionsService.find(+userId);
+  find(@Param('patientId') patientId: string) {
+    return this.prescriptionsService.find(+patientId);
+  }
+
+  @ApiOperation({ summary: 'Список назначений текущего пациентв' })
+  @ApiResponse({
+    status: 200,
+    isArray: true,
+    type: PrescriptionColumnsResponse,
+  })
+  @ApiBearerAuth('access-token')
+  @Roles(Role.PATIENT)
+  @Get()
+  my(@Request() { user }: any) {
+    return this.prescriptionsService.find(+user.id);
   }
 
   @ApiOperation({ summary: 'Редактирование назначения' })

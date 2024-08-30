@@ -3,23 +3,51 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePrescriptionDto, UpdatePrescriptionDto } from '../dto';
 import { Prescription } from '../entities';
+import { DoctorPatientService } from '../../users/services';
+import { VitaminsService } from '../../vitamins/services';
 
 @Injectable()
 export class PrescriptionsService {
   constructor(
     @InjectRepository(Prescription)
-    private prescriptionRepository: Repository<Prescription>,
+    private readonly prescriptionRepository: Repository<Prescription>,
+    private readonly vitaminsService: VitaminsService,
+    private readonly doctorPatientService: DoctorPatientService,
   ) {}
 
-  async create(dto: CreatePrescriptionDto) {
-    const created = await this.prescriptionRepository.create(dto);
+  async create(doctorId: number, dto: CreatePrescriptionDto) {
+    const vitamin = await this.vitaminsService.findById(
+      dto.vitaminId,
+      doctorId,
+    );
+
+    if (!vitamin) {
+      throw new NotFoundException(`Vitamin with id ${dto.vitaminId} not found`);
+    }
+
+    const doctorPatient = await this.doctorPatientService.find(
+      doctorId,
+      dto.patientId,
+    );
+
+    if (!doctorPatient) {
+      throw new NotFoundException(`Patient with id ${dto.patientId} not found`);
+    }
+
+    const created = this.prescriptionRepository.create({
+      ...dto,
+      doctorPatient: {
+        id: doctorPatient.id,
+      },
+      vitamin: { id: dto.vitaminId },
+    });
     const saved = await this.prescriptionRepository.save(created);
     return saved;
   }
 
-  async find(userId: number) {
+  async find(id: number) {
     return this.prescriptionRepository.findBy({
-      // doctorPatient: { id: userId },
+      doctorPatient: { patient: { id } },
     });
   }
 

@@ -35,6 +35,7 @@ export class PatientsController {
     status: 201,
     type: PatientColumnsResponse,
   })
+  @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)
   @Post()
   create(@Body() dto: CreatePatientDto, @Request() { user }: any) {

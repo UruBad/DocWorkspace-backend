@@ -1,9 +1,12 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { config, enviroments } from './configs';
-import * as modules from './modules';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { PrescriptionsModule } from './modules/prescriptions/prescriptions.module';
+import { VitaminsModule } from './modules/vitamins/vitamins.module';
 
 @Module({
   imports: [
@@ -43,10 +46,10 @@ import * as modules from './modules';
         };
       },
     }),
-    modules.AuthModule,
-    modules.PrescriptionsModule,
-    modules.UsersModule,
-    modules.VitaminsModule,
+    AuthModule,
+    UsersModule,
+    VitaminsModule,
+    PrescriptionsModule,
   ],
   controllers: [],
   providers: [],

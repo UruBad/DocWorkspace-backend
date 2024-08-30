@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { DefaultEntity } from '../../../common';
-import { User } from '../../users';
-import { Prescription } from '../../prescriptions';
+import { User } from '../../users/entities/user.entity';
+import { Prescription } from '../../prescriptions/entities';
 
 @Entity('vitamins')
 export class Vitamin extends DefaultEntity {
@@ -20,9 +20,9 @@ export class Vitamin extends DefaultEntity {
   @Column({ select: false, default: false })
   deleted: boolean;
 
-  /* @ManyToOne(() => User, (user) => user.vitamins, { eager: true })
-  user: User; */
+  @ManyToOne(() => User, (user) => user.vitamins, { eager: true })
+  doctor: User;
 
-  /* @OneToMany(() => Prescription, (prescription) => prescription.vitamin)
-  prescriptions: Prescription[]; */
+  @OneToMany(() => Prescription, (prescription) => prescription.vitamin)
+  prescriptions: Prescription[];
 }

@@ -25,8 +25,12 @@ export class VitaminsService {
     return this.vitaminRepository.find();
   }
 
-  async findById(id: number) {
-    return await this.vitaminRepository.findOneByOrFail({ id, deleted: false });
+  async findById(id: number, doctorId: number) {
+    return await this.vitaminRepository.findOneByOrFail({
+      id,
+      doctor: { id: doctorId },
+      deleted: false,
+    });
   }
 
   async update(id: number, dto: UpdateVitaminDto) {

@@ -76,7 +76,7 @@ export class VitaminsController {
   @Roles(Role.DOCTOR)
   @Get()
   findById(@Param('id') id: string) {
-    return this.vitaminsService.findById(+id);
+    return this.vitaminsService.findById(+id, 1);
   }
 
   @ApiOperation({ summary: 'Редактирование витамина' })
