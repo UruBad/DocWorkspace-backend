@@ -8,11 +8,11 @@ export class CreatePrescriptionDto {
 
   @ApiProperty()
   @IsString()
-  readonly brunch: string;
+  readonly lunch: string;
 
   @ApiProperty()
   @IsString()
-  readonly lunch: string;
+  readonly dinner: string;
 
   @ApiProperty()
   @IsNumber()

@@ -9,10 +9,10 @@ export class Prescription extends DefaultEntity {
   breakfast: string;
 
   @Column({ select: false, nullable: true })
-  brunch: string;
+  lunch: string;
 
   @Column({ select: false, nullable: true })
-  lunch: string;
+  dinner: string;
 
   @ManyToOne(() => Vitamin, (vitamin) => vitamin.prescriptions, { eager: true })
   vitamin: Vitamin;

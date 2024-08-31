@@ -6,6 +6,12 @@ import { DoctorPatient } from './doctor-patient.entity';
 
 @Entity('users')
 export class User extends DefaultEntity {
+  @Column({ select: false })
+  lastname: string;
+
+  @Column({ select: false })
+  firstname: string;
+
   @Column({ unique: true })
   username: string;
 

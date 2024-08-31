@@ -5,6 +5,16 @@ export class CreatePatientDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  readonly lastname: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly firstname: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   readonly username: string;
 
   @ApiProperty()
