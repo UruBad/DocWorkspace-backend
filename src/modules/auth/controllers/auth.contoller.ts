@@ -29,7 +29,7 @@ type AuthorizedRequest = Express.Request & {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiBody({ type: LoginDto })
   @ApiResponse({ type: PostLoginResponse, status: 200 })
@@ -44,7 +44,7 @@ export class AuthController {
   @ApiResponse({ status: 200 })
   @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
-  @Get('logout')
+  @Post('logout')
   async logOut(@Request() req: { user: PayloadToken }) {
     await this.authService.logout(req.user);
   }

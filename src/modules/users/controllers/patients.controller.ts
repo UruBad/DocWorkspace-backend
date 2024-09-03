@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -62,7 +62,7 @@ export class PatientsController {
   @ApiOperation({ summary: 'Изменение пациента' })
   @ApiBearerAuth('access-token')
   @Roles(Role.DOCTOR)
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdatePatientDto) {
     return this.usersService.update(+id, dto);
   }

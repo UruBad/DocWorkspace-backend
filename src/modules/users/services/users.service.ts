@@ -8,13 +8,15 @@ import * as bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
 import { CreateUserDto, UpdateUserDto } from '../dto';
-import { User } from '../entities';
+import { DoctorPatient, User } from '../entities';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(DoctorPatient)
+    private doctorPatientRepository: Repository<DoctorPatient>,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -32,6 +34,13 @@ export class UsersService {
     const saved = await this.userRepository.save(created);
     delete saved.password;
     delete saved.refreshToken;
+
+    const createdDoctorPatient = this.doctorPatientRepository.create({
+      patient: { id: saved.id },
+      doctor: { id: dto.doctorId },
+    });
+    await this.doctorPatientRepository.save(createdDoctorPatient);
+
     return saved;
   }
 
@@ -49,6 +58,7 @@ export class UsersService {
 
   async findByUsername(username: string) {
     return await this.userRepository.findOneOrFail({
+      select: ['id', 'password', 'role'],
       where: { username },
     });
   }

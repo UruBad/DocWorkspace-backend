@@ -9,7 +9,6 @@ export class CreateUserDto extends CreatePatientDto {
   @IsNotEmpty()
   readonly role: Role;
 
-  @ApiProperty()
   @IsEmpty()
   readonly doctorId?: number;
 }

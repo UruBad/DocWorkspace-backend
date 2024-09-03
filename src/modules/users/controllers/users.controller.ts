@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
+  Put,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -52,7 +52,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Изменение пользователя' })
   @ApiBearerAuth('access-token')
   @Roles(Role.ADMIN)
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.update(+id, dto);
   }
