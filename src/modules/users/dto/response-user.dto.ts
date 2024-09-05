@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../../../common';
 import { CreateUserDto } from './create-user.dto';
 
 export class UserColumnsResponse extends CreateUserDto {
