@@ -52,7 +52,7 @@ export class AuthController {
   @ApiResponse({ status: 200, type: GetRefreshResponse })
   @ApiBearerAuth('refresh-token')
   @UseGuards(JwtRefreshGuard)
-  @Get('refresh')
+  @Post('refresh')
   refresh(@Req() req: AuthorizedRequest) {
     return this.authService.createAccessTokenFromRefreshToken(req.user);
   }

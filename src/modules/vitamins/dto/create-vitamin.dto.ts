@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateVitaminDto {
   @ApiProperty()
@@ -18,4 +18,8 @@ export class CreateVitaminDto {
   @ApiProperty()
   @IsString()
   readonly link: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  readonly deleted: boolean;
 }

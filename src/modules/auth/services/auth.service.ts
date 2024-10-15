@@ -35,6 +35,10 @@ export class AuthService {
   }
 
   async login(user: PayloadToken) {
+    return await this.generateTokens(user);
+  }
+
+  async generateTokens(user: PayloadToken) {
     const { accessToken } = this.jwtToken(user);
     const refreshToken = this.jwtRefreshToken(user);
     await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
@@ -68,6 +72,6 @@ export class AuthService {
   }
 
   async createAccessTokenFromRefreshToken(user: PayloadToken) {
-    return this.jwtToken(user);
+    return await this.generateTokens(user);
   }
 }

@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
-import { DefaultEntity, Role } from '../../../common';
+import { DefaultEntity, ERole, EGender } from '../../../common';
 import { Vitamin } from '../../vitamins/entities';
 import { DoctorPatient } from './doctor-patient.entity';
 
@@ -12,10 +12,20 @@ export class User extends DefaultEntity {
   @Column()
   firstname: string;
 
+  @Column()
+  avatar: string;
+
+  @Column({
+    type: 'enum',
+    enum: EGender,
+    default: EGender.MALE,
+  })
+  gender: EGender;
+
   @Column({ unique: true })
   username: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ select: false, nullable: true, name: 'refresh_token' })
@@ -26,10 +36,10 @@ export class User extends DefaultEntity {
 
   @Column({
     type: 'enum',
-    enum: Role,
-    default: Role.PATIENT,
+    enum: ERole,
+    default: ERole.PATIENT,
   })
-  role: Role;
+  role: ERole;
 
   @OneToMany(() => Vitamin, (vitamin) => vitamin.doctor)
   vitamins: Vitamin[];

@@ -22,7 +22,7 @@ import {
   UpdatePatientDto,
 } from '../dto';
 import { UsersService } from '../services';
-import { JwtAuthGuard, Role, Roles, RolesGuard } from '../../../common';
+import { JwtAuthGuard, ERole, Roles, RolesGuard } from '../../../common';
 
 @ApiTags('patients')
 @Controller('patients')
@@ -36,12 +36,12 @@ export class PatientsController {
     type: PatientColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Post()
   create(@Body() dto: CreatePatientDto, @Request() { user }: any) {
     return this.usersService.create({
       ...dto,
-      role: Role.PATIENT,
+      role: ERole.PATIENT,
       doctorId: user.id,
     });
   }
@@ -53,7 +53,7 @@ export class PatientsController {
     type: PatientColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Get()
   my(@Request() { user }: any) {
     return this.usersService.findByDoctor(user.id);
@@ -61,7 +61,7 @@ export class PatientsController {
 
   @ApiOperation({ summary: 'Изменение пациента' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdatePatientDto) {
     return this.usersService.update(+id, dto);
@@ -69,7 +69,7 @@ export class PatientsController {
 
   @ApiOperation({ summary: 'Удаление пациента' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

@@ -24,4 +24,7 @@ export class PostLoginResponse {
 export class GetRefreshResponse {
   @ApiProperty()
   readonly accessToken: string;
+
+  @ApiProperty()
+  readonly refreshToken: string;
 }

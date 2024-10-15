@@ -21,7 +21,7 @@ import {
   UpdatePrescriptionDto,
   PrescriptionColumnsResponse,
 } from '../dto';
-import { JwtAuthGuard, Role, Roles, RolesGuard } from '../../../common';
+import { JwtAuthGuard, ERole, Roles, RolesGuard } from '../../../common';
 import { PrescriptionsService } from '../services';
 
 @ApiTags('prescriptions')
@@ -35,7 +35,7 @@ export class PrescriptionsController {
     status: 201,
     type: PrescriptionColumnsResponse,
   })
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Post()
   async create(@Body() dto: CreatePrescriptionDto, @Request() { user }: any) {
     return this.prescriptionsService.create(user.Id, dto);
@@ -48,7 +48,7 @@ export class PrescriptionsController {
     type: PrescriptionColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Get()
   find(@Param('patientId') patientId: string) {
     return this.prescriptionsService.find(+patientId);
@@ -61,7 +61,7 @@ export class PrescriptionsController {
     type: PrescriptionColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.PATIENT)
+  @Roles(ERole.PATIENT)
   @Get()
   my(@Request() { user }: any) {
     return this.prescriptionsService.find(+user.id);
@@ -69,7 +69,7 @@ export class PrescriptionsController {
 
   @ApiOperation({ summary: 'Редактирование назначения' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdatePrescriptionDto) {
     return this.prescriptionsService.update(+id, dto);
@@ -77,7 +77,7 @@ export class PrescriptionsController {
 
   @ApiOperation({ summary: 'Удаление назначения' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.DOCTOR)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.prescriptionsService.remove(+id);

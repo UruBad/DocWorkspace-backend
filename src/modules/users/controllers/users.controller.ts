@@ -7,6 +7,7 @@ import {
   Put,
   Post,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,7 +18,14 @@ import {
 
 import { CreateUserDto, UserColumnsResponse, UpdateUserDto } from '../dto';
 import { UsersService } from '../services';
-import { JwtAuthGuard, Public, Role, Roles, RolesGuard } from '../../../common';
+import {
+  JwtAuthGuard,
+  PayloadToken,
+  Public,
+  ERole,
+  Roles,
+  RolesGuard,
+} from '../../../common';
 
 @ApiTags('users')
 @Controller('users')
@@ -25,12 +33,26 @@ import { JwtAuthGuard, Public, Role, Roles, RolesGuard } from '../../../common';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Получение всех пользователей' })
+  @ApiResponse({
+    status: 200,
+    isArray: true,
+    type: UserColumnsResponse,
+  })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN)
+  @Get(':id')
+  getById(@Param('id') id: string) {
+    return this.usersService.findById(+id);
+  }
+
   @ApiOperation({ summary: 'Создание пользователя' })
   @ApiResponse({
     status: 201,
     type: UserColumnsResponse,
   })
-  @Public()
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN)
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.usersService.create(dto);
@@ -43,7 +65,7 @@ export class UsersController {
     type: UserColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -51,7 +73,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Изменение пользователя' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.update(+id, dto);
@@ -59,7 +81,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Удаление пользователя' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

@@ -8,16 +8,16 @@ export class Vitamin extends DefaultEntity {
   @Column({ unique: true })
   name: string;
 
-  @Column({ select: false, nullable: true })
+  @Column({ nullable: true })
   description: string;
 
-  @Column({ unique: false, nullable: true })
+  @Column()
   image: string;
 
-  @Column({ select: false, nullable: true })
+  @Column()
   link: string;
 
-  @Column({ select: false, default: false })
+  @Column({ default: false })
   deleted: boolean;
 
   @ManyToOne(() => User, (user) => user.vitamins, { eager: true })

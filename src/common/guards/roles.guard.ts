@@ -9,7 +9,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ROLE_KEY } from '../decorators/roles.decorator';
-import { PayloadToken, Role } from '../index';
+import { PayloadToken, ERole } from '../index';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this.reflector.get<Role[]>(ROLE_KEY, context.getHandler());
+    const roles = this.reflector.get<ERole[]>(ROLE_KEY, context.getHandler());
 
     if (!roles) {
       return true;

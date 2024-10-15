@@ -11,14 +11,8 @@ export class VitaminsService {
     private vitaminRepository: Repository<Vitamin>,
   ) {}
 
-  async create(dto: CreateVitaminDto) {
-    const created = this.vitaminRepository.create(dto);
-    const saved = await this.vitaminRepository.save(created);
-    return saved;
-  }
-
-  async find() {
-    return this.vitaminRepository.findBy({ deleted: false });
+  async find(id: number) {
+    return this.vitaminRepository.findBy({ deleted: false, doctor: { id } });
   }
 
   async findAll() {
@@ -31,6 +25,15 @@ export class VitaminsService {
       doctor: { id: doctorId },
       deleted: false,
     });
+  }
+
+  async create(dto: CreateVitaminDto, doctorId: number) {
+    const created = this.vitaminRepository.create({
+      ...dto,
+      doctor: { id: doctorId },
+    });
+    const saved = await this.vitaminRepository.save(created);
+    return saved;
   }
 
   async update(id: number, dto: UpdateVitaminDto) {

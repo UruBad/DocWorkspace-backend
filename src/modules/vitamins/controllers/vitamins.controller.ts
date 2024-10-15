@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -21,37 +22,19 @@ import {
   UpdateVitaminDto,
 } from '../dto';
 import { VitaminsService } from '../services';
-import { JwtAuthGuard, Role, Roles, RolesGuard } from '../../../common';
+import {
+  JwtAuthGuard,
+  ERole,
+  Roles,
+  RolesGuard,
+  PayloadToken,
+} from '../../../common';
 
 @ApiTags('vitamins')
 @Controller('vitamins')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class VitaminsController {
   constructor(private readonly vitaminsService: VitaminsService) {}
-
-  @ApiOperation({ summary: 'Создание витамина' })
-  @ApiResponse({
-    status: 201,
-    type: VitaminColumnsResponse,
-  })
-  @Roles(Role.DOCTOR)
-  @Post()
-  create(@Body() createVitaminDto: CreateVitaminDto) {
-    return this.vitaminsService.create(createVitaminDto);
-  }
-
-  @ApiOperation({ summary: 'Список всех доступных витаминов' })
-  @ApiResponse({
-    status: 200,
-    isArray: true,
-    type: VitaminColumnsResponse,
-  })
-  @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
-  @Get()
-  find() {
-    return this.vitaminsService.find();
-  }
 
   @ApiOperation({ summary: 'Список всех витаминов' })
   @ApiResponse({
@@ -60,10 +43,14 @@ export class VitaminsController {
     type: VitaminColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Get()
-  findAll() {
-    return this.vitaminsService.findAll();
+  findAll(@Request() req: { user: PayloadToken }) {
+    if (req.user.role === ERole.ADMIN) {
+      return this.vitaminsService.findAll();
+    } else {
+      return this.vitaminsService.find(+req.user.id);
+    }
   }
 
   @ApiOperation({ summary: 'Поиск витамина по идентификатору' })
@@ -73,15 +60,30 @@ export class VitaminsController {
     type: VitaminColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
-  @Get()
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Get(':id')
   findById(@Param('id') id: string) {
     return this.vitaminsService.findById(+id, 1);
   }
 
+  @ApiOperation({ summary: 'Создание витамина' })
+  @ApiResponse({
+    status: 201,
+    type: VitaminColumnsResponse,
+  })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Post()
+  create(
+    @Request() req: { user: PayloadToken },
+    @Body() createVitaminDto: CreateVitaminDto,
+  ) {
+    return this.vitaminsService.create(createVitaminDto, req.user.id);
+  }
+
   @ApiOperation({ summary: 'Редактирование витамина' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateVitaminDto: UpdateVitaminDto) {
     return this.vitaminsService.update(+id, updateVitaminDto);
@@ -89,7 +91,7 @@ export class VitaminsController {
 
   @ApiOperation({ summary: 'Удаление витамина' })
   @ApiBearerAuth('access-token')
-  @Roles(Role.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.vitaminsService.remove(+id);
