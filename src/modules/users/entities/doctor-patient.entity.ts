@@ -5,10 +5,10 @@ import { Prescription } from '../../prescriptions/entities';
 
 @Entity('doctor-patient')
 export class DoctorPatient extends DefaultEntity {
-  @ManyToOne(() => User, (user) => user.doctors, { eager: true })
+  @ManyToOne(() => User, (user) => user.doctors)
   doctor: User;
 
-  @ManyToOne(() => User, (user) => user.patients, { eager: true })
+  @ManyToOne(() => User, (user) => user.patients)
   patient: User;
 
   @OneToMany(() => Prescription, (prescription) => prescription.doctorPatient)

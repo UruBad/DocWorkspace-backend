@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
+import { CreateVitaminDto } from '../dto';
 
-export class UserColumnsResponse extends CreateUserDto {
+export class VitaminResponse extends CreateVitaminDto {
   @ApiProperty()
   readonly id: number;
 

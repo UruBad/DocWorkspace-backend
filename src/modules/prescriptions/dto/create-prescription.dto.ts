@@ -1,18 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { EAppointment } from '../../../common';
 
 export class CreatePrescriptionDto {
+  @ApiProperty({ required: false })
+  @IsEnum(EAppointment)
+  @IsNotEmpty()
+  readonly appointment: EAppointment;
+
   @ApiProperty()
-  @IsString()
-  readonly breakfast: string;
+  @IsNumber()
+  @IsNotEmpty()
+  readonly count: number;
 
   @ApiProperty()
   @IsString()
-  readonly lunch: string;
-
-  @ApiProperty()
-  @IsString()
-  readonly dinner: string;
+  @IsNotEmpty()
+  readonly type: string;
 
   @ApiProperty()
   @IsNumber()

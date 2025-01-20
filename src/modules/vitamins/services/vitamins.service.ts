@@ -32,8 +32,7 @@ export class VitaminsService {
       ...dto,
       doctor: { id: doctorId },
     });
-    const saved = await this.vitaminRepository.save(created);
-    return saved;
+    return await this.vitaminRepository.save(created);
   }
 
   async update(id: number, dto: UpdateVitaminDto) {
@@ -54,6 +53,16 @@ export class VitaminsService {
       throw new NotFoundException(`Vitamin with id ${id} does not exist`);
     }
 
-    return this.vitaminRepository.remove(item);
+    return this.update(id, { ...item, deleted: true });
+  }
+
+  async patch(id: number, dto: any) {
+    const item = await this.vitaminRepository.findOneByOrFail({ id });
+
+    if (!item) {
+      throw new NotFoundException(`Vitamin with id ${id} does not exist`);
+    }
+
+    return this.update(id, { ...item, ...dto });
   }
 }

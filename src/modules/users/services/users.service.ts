@@ -7,8 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
-import { CreateUserDto, UpdateUserDto } from '../dto';
+import { UserDto } from '../dto';
 import { DoctorPatient, User } from '../entities';
+import { ERole } from '../../../common';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,7 @@ export class UsersService {
     private doctorPatientRepository: Repository<DoctorPatient>,
   ) {}
 
-  async create(dto: CreateUserDto) {
+  async create(dto: UserDto) {
     const user = await this.userRepository.findOneBy({
       username: dto.username,
     });
@@ -35,11 +36,13 @@ export class UsersService {
     delete saved.password;
     delete saved.refreshToken;
 
-    const createdDoctorPatient = this.doctorPatientRepository.create({
-      patient: { id: saved.id },
-      doctor: { id: dto.doctorId },
-    });
-    await this.doctorPatientRepository.save(createdDoctorPatient);
+    if (dto.doctorId) {
+      const createdDoctorPatient = this.doctorPatientRepository.create({
+        patient: { id: saved.id },
+        doctor: { id: dto.doctorId },
+      });
+      await this.doctorPatientRepository.save(createdDoctorPatient);
+    }
 
     return saved;
   }
@@ -52,8 +55,34 @@ export class UsersService {
     return await this.userRepository.findOneByOrFail({ id });
   }
 
-  async findByDoctor(id: number) {
-    return await this.userRepository.findBy({ id });
+  async findPatientById(id: number, doctorId: number) {
+    return await this.userRepository.findOneByOrFail({
+      id,
+      doctors: { id: doctorId },
+    });
+  }
+
+  async findPatients() {
+    return await this.userRepository.findBy({ role: ERole.PATIENT });
+  }
+
+  async findDoctors() {
+    return await this.userRepository.findBy({ role: ERole.DOCTOR });
+    /* return await this.userRepository.find({
+      relations: ['patients', 'vitamins'] {
+        // patients: true,
+        vitamins: true,
+      },
+      where: { role: ERole.DOCTOR },
+      loadEagerRelations: false,
+    }); */
+  }
+
+  async findPatientsByDoctor(id: number) {
+    return await this.userRepository.findBy({
+      doctors: { id },
+      role: ERole.PATIENT,
+    });
   }
 
   async findByUsername(username: string) {
@@ -63,7 +92,7 @@ export class UsersService {
     });
   }
 
-  async update(id: number, dto: UpdateUserDto) {
+  async update(id: number, dto: UserDto) {
     const item = await this.userRepository.preload({
       id,
       ...dto,
@@ -81,7 +110,17 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} does not exist`);
     }
 
-    return this.userRepository.remove(item);
+    return this.update(id, { ...item, deleted: true });
+  }
+
+  async patch(id: number, dto: any) {
+    const item = await this.userRepository.findOneByOrFail({ id });
+
+    if (!item) {
+      throw new NotFoundException(`User with id ${id} does not exist`);
+    }
+
+    return this.update(id, { ...item, ...dto });
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: number) {

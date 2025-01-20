@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Request,
@@ -16,18 +17,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  CreateVitaminDto,
-  VitaminColumnsResponse,
-  UpdateVitaminDto,
-} from '../dto';
+import { CreateVitaminDto, UpdateVitaminDto, VitaminResponse } from '../dto';
 import { VitaminsService } from '../services';
 import {
-  JwtAuthGuard,
   ERole,
+  JwtAuthGuard,
+  PayloadToken,
   Roles,
   RolesGuard,
-  PayloadToken,
 } from '../../../common';
 
 @ApiTags('vitamins')
@@ -40,7 +37,7 @@ export class VitaminsController {
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: VitaminColumnsResponse,
+    type: VitaminResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(ERole.ADMIN, ERole.DOCTOR)
@@ -57,7 +54,7 @@ export class VitaminsController {
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: VitaminColumnsResponse,
+    type: VitaminResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(ERole.ADMIN, ERole.DOCTOR)
@@ -69,7 +66,7 @@ export class VitaminsController {
   @ApiOperation({ summary: 'Создание витамина' })
   @ApiResponse({
     status: 201,
-    type: VitaminColumnsResponse,
+    type: VitaminResponse,
   })
   @ApiBearerAuth('access-token')
   @Roles(ERole.ADMIN, ERole.DOCTOR)
@@ -95,5 +92,13 @@ export class VitaminsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.vitaminsService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Обновление конкретных полей витамина' })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Patch(':id')
+  patch(@Param('id') id: string, @Body() patchVitaminDto: any) {
+    return this.vitaminsService.patch(+id, patchVitaminDto);
   }
 }

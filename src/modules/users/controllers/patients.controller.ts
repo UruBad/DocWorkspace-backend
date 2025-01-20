@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Request,
@@ -16,13 +17,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import {
-  CreatePatientDto,
-  PatientColumnsResponse,
-  UpdatePatientDto,
-} from '../dto';
 import { UsersService } from '../services';
-import { JwtAuthGuard, ERole, Roles, RolesGuard } from '../../../common';
+import {
+  ERole,
+  JwtAuthGuard,
+  PayloadToken,
+  Roles,
+  RolesGuard,
+} from '../../../common';
+import { CreateUserDto, UpdateUserDto } from '../dto';
+import { PatientResponse } from '../responses';
 
 @ApiTags('patients')
 @Controller('patients')
@@ -33,45 +37,72 @@ export class PatientsController {
   @ApiOperation({ summary: 'Создание пациента' })
   @ApiResponse({
     status: 201,
-    type: PatientColumnsResponse,
+    type: PatientResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Post()
-  create(@Body() dto: CreatePatientDto, @Request() { user }: any) {
+  create(@Body() dto: CreateUserDto, @Request() req: { user: PayloadToken }) {
     return this.usersService.create({
       ...dto,
       role: ERole.PATIENT,
-      doctorId: user.id,
+      doctorId: req.user.id,
     });
   }
 
-  @ApiOperation({ summary: 'Получение моих пациентов' })
+  @ApiOperation({ summary: 'Получение пациента по идентификатору' })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Get(':id')
+  patient(@Param('id') id: string, @Request() req: { user: PayloadToken }) {
+    return this.usersService.findPatientById(+id, req.user.id);
+  }
+
+  @ApiOperation({ summary: 'Получение пациентов' })
   @ApiResponse({
     status: 200,
     isArray: true,
-    type: PatientColumnsResponse,
+    type: PatientResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Get()
-  my(@Request() { user }: any) {
-    return this.usersService.findByDoctor(user.id);
+  find(@Request() req: { user: PayloadToken }) {
+    if (req.user.role === ERole.ADMIN) {
+      return this.usersService.findPatients();
+    }
+    return this.usersService.findPatientsByDoctor(req.user.id);
   }
 
   @ApiOperation({ summary: 'Изменение пациента' })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdatePatientDto) {
-    return this.usersService.update(+id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @Request() req: { user: PayloadToken },
+  ) {
+    return this.usersService.update(+id, {
+      ...dto,
+      role: ERole.PATIENT,
+      doctorId: req.user.id,
+    });
   }
 
   @ApiOperation({ summary: 'Удаление пациента' })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Обновление конкретных полей пациента' })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Patch(':id')
+  patch(@Param('id') id: string, @Body() patchUserDto: any) {
+    return this.usersService.patch(+id, patchUserDto);
   }
 }

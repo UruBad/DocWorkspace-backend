@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Request,
@@ -18,10 +19,10 @@ import {
 
 import {
   CreatePrescriptionDto,
-  UpdatePrescriptionDto,
   PrescriptionColumnsResponse,
+  UpdatePrescriptionDto,
 } from '../dto';
-import { JwtAuthGuard, ERole, Roles, RolesGuard } from '../../../common';
+import { ERole, JwtAuthGuard, Roles, RolesGuard } from '../../../common';
 import { PrescriptionsService } from '../services';
 
 @ApiTags('prescriptions')
@@ -35,7 +36,7 @@ export class PrescriptionsController {
     status: 201,
     type: PrescriptionColumnsResponse,
   })
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Post()
   async create(@Body() dto: CreatePrescriptionDto, @Request() { user }: any) {
     return this.prescriptionsService.create(user.Id, dto);
@@ -48,7 +49,7 @@ export class PrescriptionsController {
     type: PrescriptionColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Get()
   find(@Param('patientId') patientId: string) {
     return this.prescriptionsService.find(+patientId);
@@ -61,7 +62,7 @@ export class PrescriptionsController {
     type: PrescriptionColumnsResponse,
   })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.PATIENT)
+  @Roles(ERole.ADMIN, ERole.PATIENT)
   @Get()
   my(@Request() { user }: any) {
     return this.prescriptionsService.find(+user.id);
@@ -69,7 +70,7 @@ export class PrescriptionsController {
 
   @ApiOperation({ summary: 'Редактирование назначения' })
   @ApiBearerAuth('access-token')
-  @Roles(ERole.DOCTOR)
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdatePrescriptionDto) {
     return this.prescriptionsService.update(+id, dto);
@@ -81,5 +82,13 @@ export class PrescriptionsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.prescriptionsService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Обновление конкретных полей назначения' })
+  @ApiBearerAuth('access-token')
+  @Roles(ERole.ADMIN, ERole.DOCTOR)
+  @Patch(':id')
+  patch(@Param('id') id: string, @Body() patchPrescriptionDto: any) {
+    return this.prescriptionsService.patch(+id, patchPrescriptionDto);
   }
 }

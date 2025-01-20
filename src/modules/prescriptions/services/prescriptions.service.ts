@@ -41,8 +41,7 @@ export class PrescriptionsService {
       },
       vitamin: { id: dto.vitaminId },
     });
-    const saved = await this.prescriptionRepository.save(created);
-    return saved;
+    return await this.prescriptionRepository.save(created);
   }
 
   async find(id: number) {
@@ -70,5 +69,15 @@ export class PrescriptionsService {
     }
 
     return this.prescriptionRepository.remove(item);
+  }
+
+  async patch(id: number, dto: any) {
+    const item = await this.prescriptionRepository.findOneByOrFail({ id });
+
+    if (!item) {
+      throw new NotFoundException(`Prescription with id ${id} does not exist`);
+    }
+
+    return this.update(id, { ...item, ...dto });
   }
 }

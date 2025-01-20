@@ -1,18 +1,22 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { DefaultEntity } from '../../../common';
+import { DefaultEntity, EAppointment } from '../../../common';
 import { Vitamin } from '../../vitamins/entities';
 import { DoctorPatient } from '../../users/entities';
 
 @Entity('prescriptions')
 export class Prescription extends DefaultEntity {
-  @Column({ select: false, nullable: true })
-  breakfast: string;
+  @Column({
+    type: 'enum',
+    enum: EAppointment,
+    default: EAppointment.BREAKFAST,
+  })
+  appointment: EAppointment;
 
-  @Column({ select: false, nullable: true })
-  lunch: string;
+  @Column({ nullable: false })
+  count: number;
 
-  @Column({ select: false, nullable: true })
-  dinner: string;
+  @Column({ nullable: false })
+  type: string;
 
   @ManyToOne(() => Vitamin, (vitamin) => vitamin.prescriptions, { eager: true })
   vitamin: Vitamin;

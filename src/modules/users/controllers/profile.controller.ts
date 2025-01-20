@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Request, Get } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { UserColumnsResponse } from '../dto';
+import { UserResponse } from '../responses';
 import { UsersService } from '../services';
 import { JwtAuthGuard, PayloadToken, RolesGuard } from '../../../common';
 
@@ -19,7 +19,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Мои данные' })
   @ApiResponse({
     status: 201,
-    type: UserColumnsResponse,
+    type: UserResponse,
   })
   @ApiBearerAuth('access-token')
   @Get()

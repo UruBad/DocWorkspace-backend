@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
-import { DefaultEntity, ERole, EGender } from '../../../common';
+import { DefaultEntity, EGender, ERole } from '../../../common';
 import { Vitamin } from '../../vitamins/entities';
 import { DoctorPatient } from './doctor-patient.entity';
 
@@ -31,7 +31,7 @@ export class User extends DefaultEntity {
   @Column({ select: false, nullable: true, name: 'refresh_token' })
   refreshToken: string;
 
-  @Column({ select: false, default: false })
+  @Column({ default: false })
   deleted: boolean;
 
   @Column({
@@ -44,10 +44,10 @@ export class User extends DefaultEntity {
   @OneToMany(() => Vitamin, (vitamin) => vitamin.doctor)
   vitamins: Vitamin[];
 
-  @OneToMany(() => DoctorPatient, (doctorPatient) => doctorPatient.doctor)
+  @OneToMany(() => DoctorPatient, (doctorPatient) => doctorPatient.patient)
   doctors: User[];
 
-  @OneToMany(() => DoctorPatient, (doctorPatient) => doctorPatient.patient)
+  @OneToMany(() => DoctorPatient, (doctorPatient) => doctorPatient.doctor)
   patients: User[];
 
   @BeforeInsert()

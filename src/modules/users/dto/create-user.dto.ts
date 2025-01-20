@@ -1,14 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsEnum, IsNotEmpty } from 'class-validator';
-import { ERole } from '../../../common';
-import { CreatePatientDto } from './create-patient.dto';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateUserDto extends CreatePatientDto {
+export class CreateUserDto {
   @ApiProperty()
-  @IsEnum(ERole)
+  @IsString()
   @IsNotEmpty()
-  readonly role: ERole;
+  readonly lastname: string;
 
-  @IsEmpty()
-  readonly doctorId?: number;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly firstname: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly username: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  readonly password: string;
+
+  @ApiProperty({ default: false })
+  @IsBoolean()
+  @IsNotEmpty()
+  readonly deleted: boolean;
 }
